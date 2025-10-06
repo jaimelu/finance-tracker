@@ -39,34 +39,43 @@ A full-stack personal finance tracking application built with TypeScript, design
 ### Installation
 
 **1. Clone the repository**
-'''bash
+```bash
 git clone https://github.com/jaimelu/finance-tracker.git
 cd finance-tracker
 
+```
 **2. Backend Setup**
-
+```bash
 cd backend
 npm install
+```
+Create .env file in backend folder:
+```bash
+PORT=3000
+MONGODB_URI=your_mongodb_connection_string
+```
 
-# Create .env file in backend folder
-# Add your MongoDB connection string:
-# PORT=3000
-# MONGODB_URI=your_mongodb_connection_string
+Start the backend:
 
+```bash
 npm run dev
+```
+Backend runs on http://localhost:3000
 
-**3. Frontend Setup **
-#Open a new terminal:
+**3. Frontend Setup**
+Open a new terminal:
+```bash
 cd frontend
 npm install
 ng serve
-#Frontend runs on http://localhost:4200
+```
+Frontend runs on http://localhost:4200
 
 # Project Status
 This is a personal learning project, but suggestions and feedback are welcome
 
 ## Author
-### Jaime Lu
+**Jaime Lu**
 LinkedIn: linkedin.com/in/jaime-lu
 GitHub: github.com/jaimelu
 
