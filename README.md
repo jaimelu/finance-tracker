@@ -1,0 +1,74 @@
+# Finance Tracker
+
+A full-stack personal finance tracking application built with TypeScript, designed to help users manage their income, expenses, and budgets.
+
+## Tech Stack
+
+### Frontend
+- **Angular** - Component-based framework
+- **TypeScript** - Type-safe JavaScript
+- **Bootstrap** - Responsive UI components
+- **Chart.js** *(coming soon)* - Data visualization
+
+### Backend
+- **Node.js** - JavaScript runtime
+- **Express** - Web framework
+- **TypeScript** - Type safety throughout
+- **MongoDB** - NoSQL database
+- **Mongoose** - MongoDB ODM
+
+## Features (Planned)
+
+- [x] Project setup with TypeScript
+- [x] MongoDB connection
+- [ ] Transaction management (Add, Edit, Delete)
+- [ ] Income and expense tracking
+- [ ] Budget setting and monitoring
+- [ ] Category-based expense tracking
+- [ ] Data visualization with charts
+- [ ] Monthly/yearly financial reports
+- [ ] Expense trends analysis
+
+##  Getting Started
+
+### Prerequisites
+- Node.js (v20 or higher)
+- npm or yarn
+- MongoDB Atlas account (or local MongoDB)
+
+### Installation
+
+**1. Clone the repository**
+'''bash
+git clone https://github.com/jaimelu/finance-tracker.git
+cd finance-tracker
+
+**2. Backend Setup**
+
+cd backend
+npm install
+
+# Create .env file in backend folder
+# Add your MongoDB connection string:
+# PORT=3000
+# MONGODB_URI=your_mongodb_connection_string
+
+npm run dev
+
+**3. Frontend Setup **
+#Open a new terminal:
+cd frontend
+npm install
+ng serve
+#Frontend runs on http://localhost:4200
+
+# Project Status
+This is a personal learning project, but suggestions and feedback are welcome
+
+## Author
+### Jaime Lu
+LinkedIn: linkedin.com/in/jaime-lu
+GitHub: github.com/jaimelu
+
+## License
+This Project is open source and available under the MIT License
