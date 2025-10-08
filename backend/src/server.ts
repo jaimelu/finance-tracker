@@ -2,6 +2,7 @@ import express, { Application, Request, Response } from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import transactionRoutes from './routes/transactions';
 
 // Load environment variables
 dotenv.config();
@@ -17,6 +18,9 @@ app.use(express.json());
 app.get('/api/test', (req: Request, res: Response) => {
   res.json({ message: 'Backend is working!' });
 });
+
+// Mount routes
+app.use('/api/transactions', transactionRoutes)
 
 // MongoDB connection
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/finance-tracker';

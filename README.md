@@ -41,7 +41,7 @@ A full-stack personal finance tracking application built with TypeScript, design
 **1. Clone the repository**
 
 ```bash
-git clone https://github.com/<Username>/finance-tracker.git
+git clone https://github.com/jaimelu/finance-tracker.git
 cd finance-tracker
 
 ```
@@ -83,9 +83,9 @@ This is a personal learning project, but suggestions and feedback are welcome
 
 **Jaime Lu**
 
-LinkedIn: linkedin.com/in/jaime-lu
+LinkedIn: https://linkedin.com/in/jaime-lu
 
-GitHub: github.com/jaimelu
+GitHub: https://github.com/jaimelu
 
 ## License
 This Project is open source and available under the MIT License
