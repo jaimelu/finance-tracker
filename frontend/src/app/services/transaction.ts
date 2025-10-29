@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Transaction } from '../models/transaction.model';
 
@@ -12,8 +12,32 @@ export class TransactionService {
 
   constructor(private http: HttpClient) {}
 
-  getAllTransactions(): Observable<Transaction[]> {
-    return this.http.get<Transaction[]>(this.apiUrl); 
+  getAllTransactions(filters: {
+    type?: string;
+    categories?: string[];
+    startDate?: string;
+    endDate?: string;
+  }): Observable<Transaction[]> {
+    let params = new HttpParams();
+    
+    if (filters) {
+      if (filters.type) {
+        params = params.set('type', filters.type);
+      }
+      if (filters.categories && filters.categories.length > 0) {
+        filters.categories.forEach(category => {
+          params = params.append('category', category);
+        });
+      }
+      if (filters.startDate) {
+        params = params.set('startDate', filters.startDate);
+      }
+      if (filters.endDate) {
+        params = params.set('endDate', filters.endDate);
+      }
+    }
+    
+    return this.http.get<Transaction[]>(this.apiUrl, { params }); 
   }
 
   getTransactionById(id: string): Observable<Transaction> {

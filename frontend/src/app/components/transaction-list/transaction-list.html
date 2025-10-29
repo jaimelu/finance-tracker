@@ -1,6 +1,59 @@
 <div class="container mt-4">
   <h2 class="mb-4">Transactions</h2>
 
+  <!-- Filter Section -->
+  <div class="card mb-4">
+    <div class="card-body">
+      <h5 class="card-title">Filters</h5>
+      <div class="row g-3">
+        <!-- Type Filter -->
+        <div class="col-md-3">
+          <label for="typeFilter" class="form-label">Type</label>
+          <select 
+            id="typeFilter" 
+            class="form-select" 
+            [(ngModel)]="filterType"
+            (change)="applyFilters()">
+            <option value="all">All</option>
+            <option value="income">Income</option>
+            <option value="expense">Expense</option>
+          </select>
+        </div>
+
+        <!-- Category Filter (Multi-select with checkboxes) -->
+        <div class="col-md-7">
+          <label class="form-label">Categories 
+            <small class="text-muted">({{ selectedCategories.size }} selected)</small>
+          </label>
+          <div class="border rounded p-3" style="max-height: 200px; overflow-y: auto;">
+            <div class="row">
+              <div class="col-md-6" *ngFor="let category of categories">
+                <div class="form-check">
+                  <input 
+                    class="form-check-input" 
+                    type="checkbox" 
+                    [id]="'category-' + category"
+                    [checked]="isCategorySelected(category)"
+                    (change)="toggleCategory(category)">
+                  <label class="form-check-label" [for]="'category-' + category">
+                    {{ category }}
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Reset Button -->
+        <div class="col-md-2 d-flex align-items-end">
+          <button class="btn btn-secondary w-100" (click)="resetFilters()">
+            Reset Filters
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Loading spinner -->
   <div *ngIf="loading" class="text-center">
     <div class="spinner-border" role="status">
@@ -15,7 +68,7 @@
 
   <!-- Empty state -->
   <div *ngIf="transactions.length === 0 && !loading && !error" class="alert alert-info">
-    No transactions yet. Add your first transaction!
+    No transactions found. Try adjusting your filters or add your first transaction!
   </div>
 
   <!-- Transaction table -->
@@ -40,6 +93,14 @@
           {{ transaction.type }}
         </td>
         <td>
+          <!-- Edit Button -->
+          <button 
+            class="btn btn-primary btn-sm me-2" 
+            [routerLink]="['/edit', transaction._id]">
+            Edit
+          </button>
+          
+          <!-- Delete Button -->
           <button 
             class="btn btn-danger btn-sm" 
             (click)="deleteTransaction(transaction['_id']!)">

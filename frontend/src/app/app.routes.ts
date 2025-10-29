@@ -6,5 +6,6 @@ export const routes: Routes = [
   { path: '', redirectTo: '/transactions', pathMatch: 'full' },
   { path: 'transactions', component: TransactionList },
   { path: 'add', component: AddTransaction },
-  { path: '**', redirectTo: '/transactions' }
+  { path: 'edit/:id', component: AddTransaction},
+  { path: '**', redirectTo: '/transactions' } 
 ];

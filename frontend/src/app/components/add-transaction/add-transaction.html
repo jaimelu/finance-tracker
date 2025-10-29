@@ -1,5 +1,5 @@
 <div class="container mt-4">
-  <h2 class="mb-4">Add New Transaction</h2>
+  <h2 class="mb-4">{{ isEditMode ? 'Edit Transaction' : 'Add Transaction' }}</h2>
 
   <!-- Success message -->
   <div *ngIf="successMessage" class="alert alert-success">
@@ -13,20 +13,20 @@
 
   <!-- Form -->
   <form (ngSubmit)="onSubmit()" #transactionForm="ngForm">
-    
     <!-- Amount -->
     <div class="mb-3">
       <label for="amount" class="form-label">Amount *</label>
-      <input 
-        type="number" 
-        class="form-control" 
+      <input
+        type="number"
+        class="form-control"
         id="amount"
         name="amount"
         [(ngModel)]="transaction.amount"
         required
         min="0.01"
         step="0.01"
-        placeholder="Enter amount">
+        placeholder="Enter amount"
+      />
     </div>
 
     <!-- Type -->
@@ -34,28 +34,26 @@
       <label class="form-label">Type *</label>
       <div>
         <div class="form-check form-check-inline">
-          <input 
-            class="form-check-input" 
-            type="radio" 
-            name="type" 
+          <input
+            class="form-check-input"
+            type="radio"
+            name="type"
             id="expense"
             value="expense"
-            [(ngModel)]="transaction.type">
-          <label class="form-check-label" for="expense">
-            Expense
-          </label>
+            [(ngModel)]="transaction.type"
+          />
+          <label class="form-check-label" for="expense"> Expense </label>
         </div>
         <div class="form-check form-check-inline">
-          <input 
-            class="form-check-input" 
-            type="radio" 
-            name="type" 
+          <input
+            class="form-check-input"
+            type="radio"
+            name="type"
             id="income"
             value="income"
-            [(ngModel)]="transaction.type">
-          <label class="form-check-label" for="income">
-            Income
-          </label>
+            [(ngModel)]="transaction.type"
+          />
+          <label class="form-check-label" for="income"> Income </label>
         </div>
       </div>
     </div>
@@ -63,14 +61,15 @@
     <!-- Category -->
     <div class="mb-3">
       <label for="category" class="form-label">Category *</label>
-      <select 
-        class="form-select" 
+      <select
+        class="form-select"
         id="category"
         name="category"
         [(ngModel)]="transaction.category"
-        required>
+        required
+      >
         <option value="">Select a category</option>
-        
+
         <!-- Income categories -->
         <optgroup label="Income">
           <option value="Salary">Salary</option>
@@ -78,7 +77,7 @@
           <option value="Investment">Investment</option>
           <option value="Other Income">Other Income</option>
         </optgroup>
-        
+
         <!-- Expense categories -->
         <optgroup label="Expenses">
           <option value="Rent">Rent</option>
@@ -97,38 +96,37 @@
     <!-- Date -->
     <div class="mb-3">
       <label for="date" class="form-label">Date *</label>
-      <input 
-        type="date" 
-        class="form-control" 
+      <input
+        type="date"
+        class="form-control"
         id="date"
         name="date"
         [(ngModel)]="transaction.date"
-        required>
+        required
+      />
     </div>
 
     <!-- Description -->
     <div class="mb-3">
       <label for="description" class="form-label">Description (Optional)</label>
-      <textarea 
-        class="form-control" 
+      <textarea
+        class="form-control"
         id="description"
         name="description"
         [(ngModel)]="transaction.description"
         rows="3"
-        placeholder="Enter description"></textarea>
+        placeholder="Enter description"
+      ></textarea>
     </div>
 
     <!-- Submit Button -->
-    <button 
-      type="submit" 
-      class="btn btn-primary"
-      [disabled]="loading || !transactionForm.valid">
-      {{ loading ? 'Saving...' : 'Add Transaction' }}
+    <button type="submit" class="btn btn-primary" [disabled]="loading || !transactionForm.valid">
+      <span *ngIf="loading">Saving...</span>
+      <span *ngIf="!loading && !isEditMode">Add Transaction</span>
+      <span *ngIf="!loading && isEditMode">Update Transaction</span>
     </button>
 
     <!-- Back to List Button -->
-    <a routerLink="/transactions" class="btn btn-secondary ms-2">
-      Cancel
-    </a>
+    <a routerLink="/transactions" class="btn btn-secondary ms-2"> Cancel </a>
   </form>
 </div>

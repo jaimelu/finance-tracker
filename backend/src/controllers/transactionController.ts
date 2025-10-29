@@ -4,8 +4,40 @@ import {Request, Response } from "express";
 // Get all transactions
 export const getAllTransactions = async(req: Request, res: Response) => {
     try {
-        // Fetch all transactions from database, sorted by date (newest first)
-        const transactions = await Transaction.find().sort({date: -1});
+        // Build filter object from query parameters
+        const filter: any = {};
+        
+        // Filter by type (income or expense)
+        if (req.query.type) {
+            filter.type = req.query.type;
+        }
+        
+        // Filter by category / categories
+        if (req.query.category) {
+            const categories = Array.isArray(req.query.category) 
+                ? req.query.category 
+                : [req.query.category];
+            
+            if (categories.length > 0) {
+                filter.category = { $in: categories };
+            }
+        }
+        
+        // Filter by date range
+        if (req.query.startDate || req.query.endDate) {
+            filter.date = {};
+            
+            if (req.query.startDate) {
+                filter.date.$gte = new Date(req.query.startDate as string);
+            }
+            
+            if (req.query.endDate) {
+                filter.date.$lte = new Date(req.query.endDate as string);
+            }
+        }
+        
+        // Fetch transactions with filters applied, sorted by date (newest first)
+        const transactions = await Transaction.find(filter).sort({date: -1});
 
         // Return transactions as JSON
         res.status(200).json(transactions);
