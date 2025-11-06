@@ -1,0 +1,216 @@
+<div class="container mt-4">
+  <h2 class="mb-4">Dashboard</h2>
+
+  <!-- Loading spinner -->
+  <div *ngIf="loading" class="text-center">
+    <div class="spinner-border" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+  </div>
+
+  <!-- Error message -->
+  <div *ngIf="error" class="alert alert-danger">
+    {{ error }}
+  </div>
+
+  <!-- Summary Cards -->
+<div *ngIf="!loading && !error" class="row g-4 mb-4">
+  
+  <!-- Total Income Card -->
+  <div class="col-md-3">
+    <div class="card text-white bg-success h-100">
+      <div class="card-body">
+        <h5 class="card-title">Total Income</h5>
+        <p class="card-text display-6 mb-2">{{ stats.totalIncome | currency }}</p>
+        
+        <!-- Month-over-Month Change -->
+        <div *ngIf="hasChangeData()" class="d-flex align-items-center">
+          <small class="text-white-50 me-2">vs last month:</small>
+          <span 
+            class="badge"
+            [ngClass]="getChangeClass(stats.changes!.income, false)"
+            style="background-color: rgba(255, 255, 255, 0.2);">
+            {{ getChangeIcon(stats.changes!.income) }} {{ Math.abs(stats.changes!.income) | number:'1.1-1' }}%
+          </span>
+        </div>
+        <small class="text-white-50 d-block mt-1">All time earnings</small>
+      </div>
+    </div>
+  </div>
+
+  <!-- Total Expenses Card -->
+  <div class="col-md-3">
+    <div class="card text-white bg-danger h-100">
+      <div class="card-body">
+        <h5 class="card-title">Total Expenses</h5>
+        <p class="card-text display-6 mb-2">{{ stats.totalExpenses | currency }}</p>
+        
+        <!-- Month-over-Month Change -->
+        <div *ngIf="hasChangeData()" class="d-flex align-items-center">
+          <small class="text-white-50 me-2">vs last month:</small>
+          <span 
+            class="badge"
+            [ngClass]="getChangeClass(stats.changes!.expenses, true)"
+            style="background-color: rgba(255, 255, 255, 0.2);">
+            {{ getChangeIcon(stats.changes!.expenses) }} {{ Math.abs(stats.changes!.expenses) | number:'1.1-1' }}%
+          </span>
+        </div>
+        <small class="text-white-50 d-block mt-1">All time spending</small>
+      </div>
+    </div>
+  </div>
+
+  <!-- Balance Card -->
+  <div class="col-md-3">
+    <div class="card text-white h-100" [ngClass]="stats.balance >= 0 ? 'bg-primary' : 'bg-warning'">
+      <div class="card-body">
+        <h5 class="card-title">Balance</h5>
+        <p class="card-text display-6 mb-2">{{ stats.balance | currency }}</p>
+        
+        <!-- Month-over-Month Change -->
+        <div *ngIf="hasChangeData()" class="d-flex align-items-center">
+          <small class="text-white-50 me-2">vs last month:</small>
+          <span 
+            class="badge"
+            [ngClass]="getChangeClass(stats.changes!.balance, false)"
+            style="background-color: rgba(255, 255, 255, 0.2);">
+            {{ getChangeIcon(stats.changes!.balance) }} {{ Math.abs(stats.changes!.balance) | number:'1.1-1' }}%
+          </span>
+        </div>
+        <small class="text-white-50 d-block mt-1">Current balance</small>
+      </div>
+    </div>
+  </div>
+
+  <!-- Transaction Count Card -->
+  <div class="col-md-3">
+    <div class="card text-white bg-info h-100">
+      <div class="card-body">
+        <h5 class="card-title">Transactions</h5>
+        <p class="card-text display-6 mb-2">{{ stats.transactionCount }}</p>
+        
+        <!-- This Month Info -->
+        <div *ngIf="stats.thisMonth" class="d-flex align-items-center">
+          <small class="text-white-50">This month: {{ stats.thisMonth.income - stats.thisMonth.expenses | currency }}</small>
+        </div>
+        <small class="text-white-50 d-block mt-1">Total recorded</small>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Charts Section - Pie Charts Row -->
+<div class="row mb-4">
+  <!-- Spending by Category Pie Chart -->
+  <div class="col-md-6">
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title">Spending by Category</h5>
+        
+        <!-- Date Filter Controls -->
+        <div class="mb-3">
+          <div class="row g-2">
+            <div class="col-md-12">
+              <label for="timeFilter" class="form-label small">Time Period</label>
+              <select 
+                id="timeFilter"
+                class="form-select form-select-sm"
+                [(ngModel)]="selectedTimeFilter"
+                (change)="onTimeFilterChange()">
+                <option *ngFor="let option of timeFilterOptions" [value]="option.value">
+                  {{ option.label }}
+                </option>
+              </select>
+            </div>
+          </div>
+          
+          <!-- Custom Date Range -->
+          <div *ngIf="selectedTimeFilter === 'custom'" class="row g-2 mt-2">
+            <div class="col-6">
+              <label for="customStart" class="form-label small">Start Date</label>
+              <input 
+                type="date" 
+                id="customStart"
+                class="form-control form-control-sm"
+                [(ngModel)]="customStartDate"
+                (change)="onTimeFilterChange()">
+            </div>
+            <div class="col-6">
+              <label for="customEnd" class="form-label small">End Date</label>
+              <input 
+                type="date" 
+                id="customEnd"
+                class="form-control form-control-sm"
+                [(ngModel)]="customEndDate"
+                (change)="onTimeFilterChange()">
+            </div>
+          </div>
+        </div>
+        
+        <!-- Chart -->
+        <div *ngIf="categoryData.length === 0" class="text-center text-muted py-5">
+          No expense data available for selected period
+        </div>
+        <div *ngIf="categoryData.length > 0" class="chart-container">
+          <canvas #spendingChart></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Income by Category Pie Chart -->
+  <div class="col-md-6">
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title">Income by Category</h5>
+        
+        <!-- Same time filter info display -->
+        <div class="mb-3">
+          <div class="alert alert-info py-2 mb-0 small">
+            <strong>Time Period:</strong> {{ getFilterLabel() }}
+          </div>
+        </div>
+        
+        <!-- Chart -->
+        <div *ngIf="incomeData.length === 0" class="text-center text-muted py-5">
+          No income data available for selected period
+        </div>
+        <div *ngIf="incomeData.length > 0" class="chart-container">
+          <canvas #incomeChart></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Charts Section - Line Chart Row -->
+<div class="row mb-4">
+  <div class="col-12">
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title">Income vs Expenses Trend (Last 6 Months)</h5>
+        <div *ngIf="monthlyTrends.length === 0" class="text-center text-muted py-5">
+          No trend data available
+        </div>
+        <div *ngIf="monthlyTrends.length > 0" class="chart-container">
+          <canvas #trendsChart></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+  <!-- Quick Actions -->
+  <div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">Quick Actions</h5>
+          <a routerLink="/add" class="btn btn-primary me-2">Add Transaction</a>
+          <a routerLink="/transactions" class="btn btn-secondary">View All Transactions</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
