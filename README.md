@@ -23,7 +23,7 @@ A full-stack personal finance tracking application built with TypeScript, design
 - [x] MongoDB connection
 - [x] Transaction management (Add, Edit, Delete)
 - [x] Income and expense tracking
-- [ ] Budget setting and monitoring
+- [x] Budget setting and monitoring
 - [x] Category-based expense tracking
 - [x] Data visualization with charts
 - [ ] Monthly/yearly financial reports
