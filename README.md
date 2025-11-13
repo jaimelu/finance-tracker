@@ -8,7 +8,7 @@ A full-stack personal finance tracking application built with TypeScript, design
 - **Angular** - Component-based framework
 - **TypeScript** - Type-safe JavaScript
 - **Bootstrap** - Responsive UI components
-- **Chart.js** *(coming soon)* - Data visualization
+- **Chart.js** - Data visualization
 
 ### Backend
 - **Node.js** - JavaScript runtime
