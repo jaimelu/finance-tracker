@@ -3,7 +3,8 @@ import mongoose from 'mongoose';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import transactionRoutes from './routes/transactions';
-import analyticsRoutes from './routes/analytics'
+import analyticsRoutes from './routes/analytics';
+import budgetRoutes from './routes/budgets'
 
 // Load environment variables
 dotenv.config();
@@ -14,6 +15,7 @@ const PORT = process.env.PORT || 3000;
 // Middleware
 app.use(cors());
 app.use(express.json());
+app.use('/api/budgets', budgetRoutes)
 
 // Test route
 app.get('/api/test', (req: Request, res: Response) => {
@@ -23,6 +25,7 @@ app.get('/api/test', (req: Request, res: Response) => {
 // Mount routes
 app.use('/api/transactions', transactionRoutes)
 app.use('/api/analytics', analyticsRoutes)
+app.use('/api/budgets', budgetRoutes)
 
 // MongoDB connection
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/finance-tracker';

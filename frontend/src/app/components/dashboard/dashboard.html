@@ -201,15 +201,81 @@
   </div>
 </div>
 
-  <!-- Quick Actions -->
-  <div class="row">
-    <div class="col-12">
-      <div class="card">
-        <div class="card-body">
-          <h5 class="card-title">Quick Actions</h5>
-          <a routerLink="/add" class="btn btn-primary me-2">Add Transaction</a>
-          <a routerLink="/transactions" class="btn btn-secondary">View All Transactions</a>
+<!-- Budget Tracking Section -->
+<div class="row mb-4">
+  <div class="col-12">
+    <div class="card">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h5 class="card-title mb-0">Budget Tracking - {{ getCurrentMonthName() }}</h5>
+          <button class="btn btn-primary btn-sm" routerLink="/budgets">
+            Manage Budgets
+          </button>
         </div>
+
+        <!-- Loading State -->
+        <div *ngIf="loadingBudgets" class="text-center py-3">
+          <div class="spinner-border spinner-border-sm" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+        </div>
+
+        <!-- No Budgets State -->
+        <div *ngIf="!loadingBudgets && budgetStatuses.length === 0" class="alert alert-info">
+          No budgets set for this month. <a routerLink="/budgets" class="alert-link">Set your first budget</a>
+        </div>
+
+        <!-- Budget Progress Bars -->
+<div *ngIf="!loadingBudgets && budgetStatuses.length > 0">
+  <div class="row g-3">
+    <div class="col-md-6" *ngFor="let budget of budgetStatuses">
+      <div class="budget-item">
+        <div class="d-flex justify-content-between mb-2">
+          <span class="fw-semibold">{{ budget.category }}</span>
+          <span class="text-muted small">
+            {{ budget.spent | currency }} / {{ budget.budgetAmount | currency }}
+          </span>
+        </div>
+        
+        <div class="progress" style="height: 25px;">
+          <div 
+            class="progress-bar"
+            [ngClass]="getProgressBarClass(budget)"
+            [style.width.%]="getProgressBarWidth(budget)"
+            role="progressbar">
+            <span class="fw-semibold">{{ budget.percentageUsed | number:'1.0-0' }}%</span>
+          </div>
+        </div>
+        
+        <div class="d-flex justify-content-between mt-1">
+          <small 
+            class="text-muted"
+            [ngClass]="budget.remaining >= 0 ? 'text-success' : 'text-danger'">
+            {{ budget.remaining >= 0 ? 'Remaining: ' : 'Over by: ' }}
+            {{ Math.abs(budget.remaining) | currency }}
+          </small>
+          <small>
+            <span 
+              class="badge"
+              [ngClass]="budget.status === 'safe' ? 'bg-success' : budget.status === 'warning' ? 'bg-warning' : 'bg-danger'">
+              {{ budget.status === 'safe' ? 'On Track' : budget.status === 'warning' ? 'Warning' : 'Over Budget' }}
+            </span>
+          </small>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title">Quick Actions</h5>
+        <a routerLink="/add" class="btn btn-primary me-2">Add Transaction</a>
+        <a routerLink="/transactions" class="btn btn-secondary me-2">View All Transactions</a>
+        <a routerLink="/budgets" class="btn btn-info">Manage Budgets</a>
       </div>
     </div>
   </div>

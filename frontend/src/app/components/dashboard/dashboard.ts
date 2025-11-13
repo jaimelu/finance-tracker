@@ -4,6 +4,8 @@ import { RouterLink } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { Chart, ChartConfiguration, registerables } from 'chart.js';
+import { BudgetService } from '../../services/budget.service';
+import { BudgetStatus } from '../../models/budget.model';
 
 Chart.register(...registerables);
 
@@ -52,6 +54,31 @@ export class Dashboard implements OnInit, AfterViewInit {
     @ViewChild('trendsChart') trendsChartRef!: ElementRef<HTMLCanvasElement>;
     @ViewChild('incomeChart') incomeChartRef!: ElementRef<HTMLCanvasElement>;
 
+    private categoryColorMap: { [key: string]: string } = {
+        'Groceries': '#FF6384',      // Pink
+    'Rent': '#36A2EB',           // Blue
+    'Utilities': '#FFCE56',      // Yellow
+    'Transportation': '#4BC0C0', // Teal
+    'Entertainment': '#9966FF',  // Purple
+    'Healthcare': '#FF9F40',     // Orange
+    'Dining Out': '#E91E63',     // Deep Pink
+    'Dining': '#E91E63',         // Deep Pink (same as Dining Out)
+    'Shopping': '#8E24AA',       // Purple
+    
+    // Income (greener colors)
+    'Salary': '#4CAF50',         // Green
+    'Investment': '#00BCD4',     // Cyan
+    'Freelance': '#009688',      // Teal
+    'Bonus': '#66BB6A',          // Light Green
+    'Other Income': '#FFC107',   // Amber
+    'Other': '#9E9E9E',          // Gray
+    };
+
+    private defaultColors = [
+        '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF',
+        '#FF9F40', '#E91E63', '#8E24AA', '#4CAF50', '#00BCD4'
+    ];
+
     incomeData: CategoryData[] = [];
     incomeChart: Chart | null = null;
     selectedIncomeTimeFilter: string = 'all';
@@ -69,6 +96,9 @@ export class Dashboard implements OnInit, AfterViewInit {
         balance: 0,
         transactionCount: 0
     };
+
+    budgetStatuses: BudgetStatus[] = [];
+    loadingBudgets: boolean = false;
 
     categoryData: CategoryData[] = [];
     spendingChart: Chart | null = null;
@@ -93,13 +123,19 @@ timeFilterOptions = [
   { value: 'custom', label: 'Custom Range' }
 ];
 
-    constructor(private http: HttpClient) { }
+    constructor(private http: HttpClient, private budgetService: BudgetService) { }
+
+    private getCategoryColor(category: string, index: number): string {
+        // Return mapped color if it exists, otherwise use default color based on index
+        return this.categoryColorMap[category] || this.defaultColors[index % this.defaultColors.length];
+    }
 
     ngOnInit(): void {
         this.loadStats();
         this.loadCategoryData();
         this.loadMonthlyTrends();
         this.loadIncomeData();
+        this.loadBudgetStatus();
     }
 
     ngAfterViewInit(): void {
@@ -202,10 +238,9 @@ timeFilterOptions = [
         console.log('Chart data:', data);
 
         // Generate colors for each category
-        const backgroundColors = [
-            '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF',
-            '#FF9F40', '#FF6384', '#C9CBCF', '#4BC0C0', '#FF6384'
-        ];
+        const backgroundColors = this.categoryData.map((item, index) => 
+        this.getCategoryColor(item.category, index)
+        );
 
         const config: ChartConfiguration = {
             type: 'pie',
@@ -471,10 +506,9 @@ createIncomeChart(): void {
   console.log('Income chart data:', data);
   
   // Generate green-themed colors for income
-  const backgroundColors = [
-    '#28a745', '#20c997', '#17a2b8', '#6610f2', '#6f42c1',
-    '#fd7e14', '#ffc107', '#198754', '#0dcaf0', '#6c757d'
-  ];
+  const backgroundColors = this.incomeData.map((item, index) => 
+    this.getCategoryColor(item.category, index)
+  );
 
   const config: ChartConfiguration = {
     type: 'pie',
@@ -551,6 +585,39 @@ getChangeClass(change: number, isExpense: boolean = false): string {
 hasChangeData(): boolean {
   return !!this.stats.changes;
 }
+
+loadBudgetStatus(): void {
+  this.loadingBudgets = true;
+  
+  this.budgetService.getBudgetStatus().subscribe({
+    next: (data) => {
+      this.budgetStatuses = data;
+      this.loadingBudgets = false;
+      console.log('Budget status loaded:', data);
+    },
+    error: (err) => {
+      console.error('Error loading budget status:', err);
+      this.loadingBudgets = false;
+    }
+  });
+}
+
+getCurrentMonthName(): string {
+  const monthNames = ["January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"];
+  return monthNames[new Date().getMonth()];
+}
+
+getProgressBarClass(status: BudgetStatus): string {
+  if (status.percentageUsed >= 100) return 'bg-danger';
+  if (status.percentageUsed >= 80) return 'bg-warning';
+  return 'bg-success';
+}
+
+getProgressBarWidth(status: BudgetStatus): number {
+  return Math.min(status.percentageUsed, 100);
+}
+
 
 
 }

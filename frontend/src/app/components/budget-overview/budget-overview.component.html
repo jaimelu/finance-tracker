@@ -1,0 +1,133 @@
+<div class="budget-overview-container">
+  <div class="header">
+    <h2>Budget Overview</h2>
+    <button class="btn-refresh" (click)="refreshData()">
+      🔄 Refresh
+    </button>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading">
+    <p>Loading budget data...</p>
+  </div>
+
+  <!-- Budget Overview Summary -->
+  <div *ngIf="!loading && budgetOverview" class="overview-summary">
+    <div class="summary-card">
+      <div class="summary-icon">💰</div>
+      <div class="summary-content">
+        <h4>Total Budgeted</h4>
+        <p class="summary-value">{{ formatCurrency(budgetOverview.totalBudgeted) }}</p>
+      </div>
+    </div>
+
+    <div class="summary-card">
+      <div class="summary-icon">💸</div>
+      <div class="summary-content">
+        <h4>Total Spent</h4>
+        <p class="summary-value">{{ formatCurrency(budgetOverview.totalSpent) }}</p>
+      </div>
+    </div>
+
+    <div class="summary-card">
+      <div class="summary-icon">💵</div>
+      <div class="summary-content">
+        <h4>Total Remaining</h4>
+        <p class="summary-value" [class.negative]="budgetOverview.totalRemaining < 0">
+          {{ formatCurrency(budgetOverview.totalRemaining) }}
+        </p>
+      </div>
+    </div>
+
+    <div class="summary-card">
+      <div class="summary-icon">📊</div>
+      <div class="summary-content">
+        <h4>Overall Progress</h4>
+        <p class="summary-value">{{ budgetOverview.overallPercentage.toFixed(1) }}%</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Category Status Cards -->
+  <div *ngIf="!loading" class="category-status-section">
+    <h3>Budget Status by Category</h3>
+
+    <div *ngIf="budgetStatuses.length === 0" class="no-budgets">
+      <p>No active budgets. Create a budget to start tracking your spending!</p>
+    </div>
+
+    <div class="status-grid" *ngIf="budgetStatuses.length > 0">
+      <div 
+        class="status-card" 
+        *ngFor="let status of budgetStatuses"
+        [class]="getStatusClass(status.status)"
+      >
+        <div class="status-card-header">
+          <h4>{{ status.category }}</h4>
+          <span class="status-badge" [class]="getStatusClass(status.status)">
+            {{ getStatusLabel(status.status) }}
+          </span>
+        </div>
+
+        <div class="status-card-body">
+          <!-- Budget vs Spent -->
+          <div class="budget-amounts">
+            <div class="amount-item">
+              <span class="label">Budget:</span>
+              <span class="value">{{ formatCurrency(status.budgetAmount) }}</span>
+            </div>
+            <div class="amount-item">
+              <span class="label">Spent:</span>
+              <span class="value spent">{{ formatCurrency(status.spent) }}</span>
+            </div>
+            <div class="amount-item">
+              <span class="label">Remaining:</span>
+              <span class="value" [class.negative]="status.remaining < 0">
+                {{ formatCurrency(status.remaining) }}
+              </span>
+            </div>
+          </div>
+
+          <!-- Progress Bar -->
+          <div class="progress-container">
+            <div class="progress-bar-bg">
+              <div 
+                class="progress-bar-fill" 
+                [style.width.%]="status.percentageUsed > 100 ? 100 : status.percentageUsed"
+                [style.background-color]="getProgressBarColor(status.status)"
+              ></div>
+            </div>
+            <span class="progress-text">{{ status.percentageUsed.toFixed(1) }}% used</span>
+          </div>
+
+          <!-- Period Info -->
+          <div class="period-info">
+            <span>{{ getPeriodLabel(status.period) }} period</span>
+            <span class="dates">
+              {{ formatDate(status.startDate) }} - {{ formatDate(status.endDate) }}
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Category Insights -->
+  <div *ngIf="!loading && budgetOverview && budgetOverview.totalCategories > 0" class="insights-section">
+    <h3>Quick Insights</h3>
+    <div class="insights-grid">
+      <div class="insight-card green">
+        <div class="insight-number">{{ budgetOverview.categoriesOnTrack }}</div>
+        <div class="insight-label">Categories On Track</div>
+      </div>
+      <div class="insight-card red">
+        <div class="insight-number">{{ budgetOverview.categoriesOverBudget }}</div>
+        <div class="insight-label">Categories Over Budget</div>
+      </div>
+      <div class="insight-card blue">
+        <div class="insight-number">{{ budgetOverview.totalCategories }}</div>
+        <div class="insight-label">Total Budgets</div>
+      </div>
+    </div>
+  </div>
+</div>

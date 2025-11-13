@@ -12,7 +12,25 @@
 }
 
 .chart-container {
-    position: relative;
-    height: 300px;
-    padding: 20px;
+  position: relative;
+  height: 300px;
+  padding: 20px;
+}
+
+.budget-item {
+  padding: 15px;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  background-color: #f8f9fa;
+}
+
+.progress {
+  border-radius: 10px;
+}
+
+.progress-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: width 0.6s ease;
 }
